@@ -5,7 +5,7 @@ from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
 BASE_MODEL = "pierreguillou/gpt2-small-portuguese"
-ADAPTER_PATH = "../data/samples/cronicas-lora"
+ADAPTER_PATH = "https://github.com/carloshrbezerraodin/tech-challenge-04-prova-sub/tree/master/data/samples/cronicas-lora"
 TOKEN="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"
 
 st.set_page_config(page_title="Playground Crônicas", layout="wide")
