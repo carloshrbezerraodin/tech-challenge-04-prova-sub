@@ -6,16 +6,17 @@ from peft import PeftModel
 
 BASE_MODEL = "pierreguillou/gpt2-small-portuguese"
 ADAPTER_PATH = "../data/samples/cronicas-lora"
+TOKEN="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"
 
 st.set_page_config(page_title="Playground Crônicas", layout="wide")
 
 @st.cache_resource(show_spinner=True)
 def load_model():
-    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, use_auth_token=TOKEN)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, device_map="auto")
-    model = PeftModel.from_pretrained(base_model, ADAPTER_PATH)
+    base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, device_map="auto", use_auth_token=TOKEN)
+    model = PeftModel.from_pretrained(base_model, ADAPTER_PATH, use_auth_token=TOKEN)
     model.eval()
     generator = pipeline(
         "text-generation",
