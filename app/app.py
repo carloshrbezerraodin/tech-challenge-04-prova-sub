@@ -3,20 +3,34 @@ import streamlit as st
 import torch
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
+from dotenv import load_dotenv
+from streamlit.runtime.secrets import StreamlitSecretNotFoundError
+
+def get_config():
+    try:
+        HF_TOKEN = st.secrets["HF_TOKEN"]
+    except (StreamlitSecretNotFoundError, KeyError):
+        load_dotenv()
+        HF_TOKEN = os.getenv("HF_TOKEN")
+
+    if HF_TOKEN is None:
+        raise ValueError("Nenhum token Hugging Face encontrado. Configure no .env local ou st.secrets no Cloud.")
+
+    return HF_TOKEN
 
 BASE_MODEL = "pierreguillou/gpt2-small-portuguese"
-ADAPTER_PATH = "https://github.com/carloshrbezerraodin/tech-challenge-04-prova-sub/tree/master/data/samples/cronicas-lora"
-TOKEN="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"
+ADAPTER_PATH = "../data/samples/cronicas-lora"
+HF_TOKEN = get_config()
 
 st.set_page_config(page_title="Playground Crônicas", layout="wide")
 
 @st.cache_resource(show_spinner=True)
 def load_model():
-    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, use_auth_token=TOKEN)
+    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, use_auth_token=HF_TOKEN)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, device_map="auto", use_auth_token=TOKEN)
-    model = PeftModel.from_pretrained(base_model, ADAPTER_PATH, use_auth_token=TOKEN)
+    base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, device_map="auto", use_auth_token=HF_TOKEN)
+    model = PeftModel.from_pretrained(base_model, ADAPTER_PATH, use_auth_token=HF_TOKEN)
     model.eval()
     generator = pipeline(
         "text-generation",
@@ -56,3 +70,4 @@ st.subheader("Histórico")
 for i, h in enumerate(st.session_state["history"][::-1], 1):
     st.markdown(f"**Crônica {i}:**")
     st.write(h)
+

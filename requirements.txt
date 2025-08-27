@@ -10,3 +10,4 @@ sentencepiece>=0.1.99
 streamlit>=1.28.0
 nltk>=3.8.1
 PyYAML>=6.0
+python-dotenv==1.0.1
