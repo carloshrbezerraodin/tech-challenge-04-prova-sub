@@ -19,7 +19,7 @@ def get_config():
     return HF_TOKEN
 
 BASE_MODEL = "pierreguillou/gpt2-small-portuguese"
-ADAPTER_PATH = "../data/samples/cronicas-lora"
+ADAPTER_PATH = os.getenv("ADAPTER_PATH_ENV") if os.getenv("ADAPTER_PATH_ENV") else "carloshrbezerra/cronicas-lora"
 HF_TOKEN = get_config()
 
 st.set_page_config(page_title="Playground Crônicas", layout="wide")
